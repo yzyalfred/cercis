@@ -29,17 +29,17 @@ func (this *PBProcessor) SetByteOrder(littleEndian bool) {
 	this.littleEndian = littleEndian
 }
 
-func (this *PBProcessor) Unmarshal(msgData []byte) (interface{}, error) {
+func (this *PBProcessor) Unmarshal(msgData []byte) (interface{}, interface{}, error) {
 	// activity you should check before
 	if len(msgData) <= MSGID_SIZE {
-		return nil, utils.ERROR_MSGID_SHORT
+		return nil, nil, utils.ERROR_MSGID_SHORT
 	}
 
 	msgId := utils.ByteToUin32(msgData, this.littleEndian)
 	msgType, ok := this.msgInfoList[msgId]
 	if !ok {
 		log.Warn("msgId not found: ", msgId)
-		return nil, utils.ERROR_NOT_FOUND
+		return nil, nil, utils.ERROR_NOT_FOUND
 	}
 
 	msgValue := reflect.New(msgType.Elem()).Interface()
@@ -47,10 +47,10 @@ func (this *PBProcessor) Unmarshal(msgData []byte) (interface{}, error) {
 	err := proto.Unmarshal(msgData[MSGID_SIZE:], msg)
 	if err != nil {
 		log.Warn("unmarshall error, msgId: ", msgId, "data: ", msgData)
-		return nil, err
+		return nil, nil, err
 	}
 
-	return msg, nil
+	return msgId, msg, nil
 }
 
 // add head: msgId

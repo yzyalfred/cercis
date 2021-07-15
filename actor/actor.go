@@ -15,6 +15,8 @@ type CallIO struct {
 	Buff []byte
 }
 
+type msgCallFuncType func(uint32, uint64, interface{}, interface{})
+
 type Actor struct {
 	isStart bool
 
@@ -24,14 +26,14 @@ type Actor struct {
 	msgChan     chan bool
 	msgFlag     int32
 	msgQuene    *mpsc.Queue
-	msgCallFunc func(uint32, uint64, interface{})
+	msgCallFunc msgCallFuncType
 
 	// timer
 	timer         *time.Ticker
 	timerCallFunc func()
 
-	// processor
-	processor processor.IProcessor
+	// Processor
+	Processor processor.IProcessor
 }
 
 func NewActor() *Actor {
@@ -50,11 +52,11 @@ func (this *Actor) Init() {
 	this.msgQuene = mpsc.New()
 
 	// no timer
-	this.timer = time.NewTicker(1<<63 - 1*time.Nanosecond)
+	this.timer = time.NewTicker(1<<63 - 1)
 	this.timerCallFunc = nil
 
-	// pb processor default
-	this.processor = processor.NewPBProcessor()
+	// pb Processor default
+	this.Processor = processor.NewPBProcessor()
 }
 
 func (this *Actor) Start() {
@@ -68,6 +70,13 @@ func (this *Actor) Stop() {
 	this.eventChan <- ACTOR_EVENT_CLOSE
 }
 
+func (this *Actor) SendMsg(clientId uint32, targetId uint64, msgId interface{}, msg interface{}) {
+	buf, err := this.Processor.Marshal(msgId, msg)
+	if err == nil {
+		this.Send(clientId, targetId, buf)
+	}
+}
+
 func (this *Actor) Send(clentId uint32, targetId uint64, buf []byte) {
 	this.msgQuene.Push(CallIO{
 		ClienId:  clentId,
@@ -79,6 +88,10 @@ func (this *Actor) Send(clentId uint32, targetId uint64, buf []byte) {
 	}
 }
 
+func (this *Actor) RegisterMsgCallFunc(f msgCallFuncType) {
+	this.msgCallFunc = f
+}
+
 func (this *Actor) RegisterTimer(duration time.Duration, callFunc func()) {
 	this.timer.Stop()
 	this.timer = time.NewTicker(duration)
@@ -87,7 +100,7 @@ func (this *Actor) RegisterTimer(duration time.Duration, callFunc func()) {
 
 func (this *Actor) SetProcessor(processorType uint8) {
 	if processorType == processor.PROCESSOR_TYPE_PB {
-		this.processor = processor.NewPBProcessor()
+		this.Processor = processor.NewPBProcessor()
 	}
 }
 
@@ -131,7 +144,7 @@ func (this *Actor) loop() bool {
 }
 
 func (this *Actor) RegisterMsg(msgId interface{}, msg interface{}) {
-	this.processor.Register(msgId, msg)
+	this.Processor.Register(msgId, msg)
 }
 
 func (this *Actor) consumeMsg() {
@@ -142,8 +155,8 @@ func (this *Actor) consumeMsg() {
 }
 
 func (this *Actor) handleMsg(callIo CallIO) {
-	msg, err := this.processor.Unmarshal(callIo.Buff)
-	if err != nil {
-		this.msgCallFunc(callIo.ClienId, callIo.TargetId, msg)
+	msgId, msg, err := this.Processor.Unmarshal(callIo.Buff)
+	if err == nil {
+		this.msgCallFunc(callIo.ClienId, callIo.TargetId, msgId, msg)
 	}
 }

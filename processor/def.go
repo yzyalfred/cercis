@@ -5,7 +5,7 @@ const (
 )
 
 type IProcessor interface {
-	Unmarshal([]byte) (interface{}, error)
+	Unmarshal([]byte) (interface{}, interface{}, error)
 	Marshal(interface{},interface{}) ([]byte, error)
 	Register(interface{}, interface{})
 }
