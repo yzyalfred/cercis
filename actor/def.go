@@ -5,6 +5,8 @@ const (
 )
 
 type IActor interface {
+	Init()
+	Start()
 	SendMsg(uint32, uint64, interface{}, interface{})
 	Send(uint32, uint64, []byte)
 }
