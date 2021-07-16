@@ -20,6 +20,10 @@ func (this *ActorMgr) GetActor(name string) IActor {
 	return nil
 }
 
+func (this *ActorMgr) GetAllAcotr() map[string]IActor {
+	return this.actorList
+}
+
 func (this *ActorMgr) SendMsgToActor(name string, clentId uint32, targetId uint64, msgId interface{}, msg interface{})  {
 	actor, found := this.actorList[name]
 	if found {
