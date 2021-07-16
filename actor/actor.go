@@ -1,9 +1,9 @@
 package actor
 
 import (
-	"github.com/yzyalfred/cercis/processor"
-	"github.com/yzyalfred/cercis/utils"
-	"github.com/yzyalfred/cercis/utils/mpsc"
+	"github.com/yzyshine/cercis/processor"
+	"github.com/yzyshine/cercis/utils"
+	"github.com/yzyshine/cercis/utils/mpsc"
 	"sync/atomic"
 	"time"
 )

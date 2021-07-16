@@ -1,8 +1,8 @@
 package network
 
 import (
-	"github.com/yzyalfred/cercis/log"
-	"github.com/yzyalfred/cercis/utils"
+	"github.com/yzyshine/cercis/log"
+	"github.com/yzyshine/cercis/utils"
 	"io"
 	"net"
 )

@@ -2,7 +2,7 @@ package network
 
 import (
 	"errors"
-	"github.com/yzyalfred/cercis/utils"
+	"github.com/yzyshine/cercis/utils"
 	"io"
 )
 

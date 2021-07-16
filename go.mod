@@ -1,4 +1,4 @@
-module github.com/yzyalfred/cercis
+module github.com/yzyshine/cercis
 
 go 1.16
 

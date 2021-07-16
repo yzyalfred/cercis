@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"github.com/yzyalfred/cercis/log"
+	"github.com/yzyshine/cercis/log"
 	"runtime"
 )
 

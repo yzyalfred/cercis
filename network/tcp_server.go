@@ -3,7 +3,7 @@ package network
 import (
 	"errors"
 	"fmt"
-	"github.com/yzyalfred/cercis/log"
+	"github.com/yzyshine/cercis/log"
 	"net"
 	"sync"
 	"sync/atomic"
