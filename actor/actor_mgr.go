@@ -20,10 +20,17 @@ func (this *ActorMgr) GetActor(name string) IActor {
 	return nil
 }
 
-func (this *ActorMgr) SendToActor(name string, clentId uint32, targetId uint64, msgId interface{}, msg interface{})  {
+func (this *ActorMgr) SendMsgToActor(name string, clentId uint32, targetId uint64, msgId interface{}, msg interface{})  {
 	actor, found := this.actorList[name]
 	if found {
 		actor.SendMsg(clentId, targetId, msgId, msg)
+	}
+}
+
+func (this *ActorMgr) SendToActor(name string, clentId uint32, targetId uint64, buf []byte)  {
+	actor, found := this.actorList[name]
+	if found {
+		actor.Send(clentId, targetId, buf)
 	}
 }
 
